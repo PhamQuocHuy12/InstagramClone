@@ -12,6 +12,7 @@ import thunk from 'redux-thunk';
 import SignIn from './app/screens/SignIn';
 import SignUp from './app/screens/SignUp';
 import Main from './app/screens/Main';
+import Add from './app/screens/Add';
 
 const Stack = createNativeStackNavigator();
 const store = createStore(rootReducer, applyMiddleware(thunk));
@@ -52,8 +53,9 @@ const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="Main" component={Main} />
+        <Stack.Navigator >
+          <Stack.Screen name="Main" component={Main} options={{headerShown: false}}/>
+          <Stack.Screen name="Add" component={Add} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

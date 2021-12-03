@@ -13,10 +13,12 @@ import {fetchUser} from '../../redux/actions/index';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feed from './Feed';
-import Add from './Add';
 import Profile from './Profile';
 
 const Tab = createMaterialBottomTabNavigator();
+const EmptyScreen = () => {
+  return(null);
+}
 
 export class Main extends Component {
   componentDidMount() {
@@ -24,7 +26,7 @@ export class Main extends Component {
   }
   render() {
     return (
-      <Tab.Navigator labeled={false}>
+      <Tab.Navigator initialRouteName="Feed" labeled={false}>
         <Tab.Screen
           name="Feed"
           component={Feed}
@@ -35,8 +37,14 @@ export class Main extends Component {
           }}
         />
         <Tab.Screen
-          name="Add"
-          component={Add}
+          name="MainAdd"
+          component={EmptyScreen}
+          listeners={({ navigation}) => ({
+            tabPress: event => {
+              event.preventDefault();
+              navigation.navigate("Add")
+            }
+          })}
           options={{
             tabBarIcon: ({color, size}) => (
               <MaterialCommunityIcons name="plus-box" color={color} size={26} />
