@@ -4,17 +4,17 @@ import auth from '@react-native-firebase/auth';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import {Provider} from 'react-redux';
+import {createStore, applyMiddleware} from 'redux';
 import rootReducer from './redux/reducers';
 import thunk from 'redux-thunk';
 
 import SignIn from './app/screens/SignIn';
 import SignUp from './app/screens/SignUp';
-import Home from './app/screens/Home'
+import Main from './app/screens/Main';
 
 const Stack = createNativeStackNavigator();
-const store =  createStore(rootReducer, applyMiddleware(thunk));
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
 const App = () => {
   const [loaded, setloaded] = useState(false);
@@ -48,10 +48,14 @@ const App = () => {
         </Stack.Navigator>
       </NavigationContainer>
     );
-  };
+  }
   return (
     <Provider store={store}>
-      <Home/>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Main" component={Main} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </Provider>
   );
 };
