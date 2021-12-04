@@ -11,7 +11,7 @@ import {
   Button,
 } from 'react-native';
 
-export default function Add() {
+export default function Add({navigation}) {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
@@ -23,9 +23,9 @@ export default function Add() {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === 'granted');
 
-      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const galleryStatus =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
       setHasGalleryPermission(galleryStatus.status === 'granted');
-
     })();
   }, []);
 
@@ -50,10 +50,10 @@ export default function Add() {
     }
   };
 
-  if (hasCameraPermission === null || hasGalleryPermission ===false) {
+  if (hasCameraPermission === null || hasGalleryPermission === false) {
     return <View />;
   }
-  if (hasCameraPermission === null || hasGalleryPermission ===false){
+  if (hasCameraPermission === null || hasGalleryPermission === false) {
     return <Text>No access to camera</Text>;
   }
   return (
@@ -68,6 +68,10 @@ export default function Add() {
       </View>
       <Button title={'Take a picture'} onPress={() => takePicture()} />
       <Button title={'Pick image from gallery'} onPress={() => pickImage()} />
+      <Button
+        title={'Save'}
+        onPress={() => navigation.navigate('Save', {image})}
+      />
       {image && <Image source={{uri: image}} style={{flex: 1}} />}
       <Button
         style={styles.button}

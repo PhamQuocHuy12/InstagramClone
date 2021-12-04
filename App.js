@@ -13,6 +13,7 @@ import SignIn from './app/screens/SignIn';
 import SignUp from './app/screens/SignUp';
 import Main from './app/screens/Main';
 import Add from './app/screens/Add';
+import Save from './app/screens/Save';
 
 const Stack = createNativeStackNavigator();
 const store = createStore(rootReducer, applyMiddleware(thunk));
@@ -55,7 +56,8 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator >
           <Stack.Screen name="Main" component={Main} options={{headerShown: false}}/>
-          <Stack.Screen name="Add" component={Add} />
+          <Stack.Screen name="Add" component={Add}/>
+          <Stack.Screen name="Save" component={Save} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
