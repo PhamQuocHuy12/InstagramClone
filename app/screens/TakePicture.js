@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Camera} from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import {Icon} from 'react-native-elements';
 import {
   StyleSheet,
   Text,
@@ -11,7 +12,7 @@ import {
   Button,
 } from 'react-native';
 
-export default function Add({navigation}) {
+export default function TakePicture({navigation}) {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [camera, setCamera] = useState(null);
@@ -23,18 +24,20 @@ export default function Add({navigation}) {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === 'granted');
 
-      const galleryStatus =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
       setHasGalleryPermission(galleryStatus.status === 'granted');
     })();
   }, []);
 
   const takePicture = async () => {
-    if (camera != null) {
-      const data = await camera.takePictureAsync(null);
+    if (camera) {
+      const data = await camera.takePictureAsync();
       setImage(data.uri);
+      console.log(image);
+      toAddCaption(data.uri);
     }
-  };
+  }
+
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -42,13 +45,17 @@ export default function Add({navigation}) {
       aspect: [1, 1],
       quality: 1,
     });
-
     console.log(result);
 
     if (!result.cancelled) {
       setImage(result.uri);
+      toAddCaption(result.uri);
     }
   };
+
+  const toAddCaption = (image) => {
+    navigation.navigate('AddCaption', {image: image});
+  }
 
   if (hasCameraPermission === null || hasGalleryPermission === false) {
     return <View />;
@@ -61,44 +68,63 @@ export default function Add({navigation}) {
       <View style={styles.cameraContainer}>
         <Camera
           ref={ref => setCamera(ref)}
-          style={styles.flexRatio}
+          style={styles.camera}
           type={type}
           ratio={'1:1'}
         />
       </View>
-      <Button title={'Take a picture'} onPress={() => takePicture()} />
-      <Button title={'Pick image from gallery'} onPress={() => pickImage()} />
-      <Button
-        title={'Save'}
-        onPress={() => navigation.navigate('Save', {image})}
-      />
-      {image && <Image source={{uri: image}} style={{flex: 1}} />}
-      <Button
-        style={styles.button}
-        title={'Flip Camera'}
-        onPress={() => {
-          setType(
-            type === Camera.Constants.Type.back
-              ? Camera.Constants.Type.front
-              : Camera.Constants.Type.back,
-          );
-        }}>
-        <Text style={styles.text}> Flip </Text>
-      </Button>
+      {/* {image && <Image source={{uri: image}} style={styles.image} />} */}
+
+      <View style={styles.cameraControlContainer}>
+        <TouchableOpacity onPress={() => pickImage()}>
+          <Icon reverse name="photograph" type="fontisto" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.takePictureBtn}
+          onPress={() => takePicture()}>
+          <Icon reverse name="camera" type="evilicons" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => {
+            setType(
+              type === Camera.Constants.Type.back
+                ? Camera.Constants.Type.front
+                : Camera.Constants.Type.back,
+            );
+          }}>
+          <Icon reverse name="flip-camera-android" type="materialicons" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   cameraContainer: {
     flex: 1,
     flexDirection: 'row',
   },
-  flexRatio: {
+  camera: {
     flex: 1,
     aspectRatio: 1,
   },
-  container: {
-    flex: 1,
+  save: {
+    color: 'white',
+    fontSize: 17,
+    fontWeight: '500',
+  },
+  image: {
+    aspectRatio: 1,
+    flex: 2,
+  },
+  cameraControlContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 15,
   },
 });

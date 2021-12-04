@@ -43,7 +43,7 @@ export class Main extends Component {
           listeners={({ navigation}) => ({
             tabPress: event => {
               event.preventDefault();
-              navigation.navigate("Add")
+              navigation.navigate("TakePicture")
             }
           })}
           options={{

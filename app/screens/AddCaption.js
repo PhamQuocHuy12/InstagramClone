@@ -12,8 +12,15 @@ import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
-export default function Save(props) {
+export default function AddCaption(props) {
   const [caption, setCaption] = useState('');
+  console.log(props.route.params);
+
+  React.useLayoutEffect(() => {
+    props.navigation.setOptions({
+      headerRight: () => <TouchableOpacity><Text onPress={() => uploadImage()}>Save</Text></TouchableOpacity>,
+    });
+  }, [props.navigation]);
 
   const uploadImage = async () => {
     const uri = props.route.params.image;
@@ -50,19 +57,22 @@ export default function Save(props) {
         downloadURL,
         caption,
         creation: firestore.FieldValue.serverTimestamp(),
-      }).then(
-          props.navigation.popToTop()
-      )
+      })
+      .then(props.navigation.popToTop()),
   ];
+
+
 
   return (
     <View style={styles.container}>
-      <Image source={{uri: props.route.params.image}} />
       <TextInput
+        multiline={true}
         placeholder="Write a caption . . ."
         onChangeText={caption => setCaption(caption)}
       />
-      <Button title="Save" onPress={() => uploadImage()} />
+      <Image style={styles.image} source={{uri: props.route.params.image}} />
+
+      {/* <Button title="Save" onPress={() => uploadImage()} /> */}
     </View>
   );
 }
@@ -70,5 +80,9 @@ export default function Save(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  image: {
+    aspectRatio: 1,
+    marginTop:5
   },
 });

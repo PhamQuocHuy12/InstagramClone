@@ -3,16 +3,39 @@ import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {fetchUserPosts, fetchUser} from '../../redux/actions';
+import {Icon, Avatar} from 'react-native-elements';
 
 function Profile(props) {
   const {currentUser, posts} = props;
+  console.log('1');
 
   return (
     <View style={styles.container}>
-      <View style={styles.infoContainer}>
-        <Text style={styles.userName}>{currentUser.userName}</Text>
-        <Text style={styles.email}>{currentUser.email}</Text>
+      <Text style={styles.userName}>{currentUser.userName}</Text>
+      <View style={styles.avatarContainer}>
+        <Avatar
+          size={100}
+          title={currentUser.userName[0]}
+          onPress={() => console.log('Works!')}
+          activeOpacity={0.7}
+          rounded
+        />
+        <View style={styles.statisticsContainter}>
+          <View style={styles.stat}>
+            <Text style={styles.number}>{posts.length}</Text>
+            <Text>Posts</Text>
+          </View>
+          <View style={styles.stat}>
+            <Text style={styles.number}>69</Text>
+            <Text>Follower</Text>
+          </View>
+          <View style={styles.stat}>
+            <Text style={styles.number}>96</Text>
+            <Text>Following</Text>
+          </View>
+        </View>
       </View>
+
       <View style={styles.galleryContainer}>
         <FlatList
           numColumns={3}
@@ -38,10 +61,9 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   userName: {
-    color: 'black',
-  },
-  email: {
-    color: 'black',
+    alignSelf: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   galleryContainer: {},
   image: {
@@ -52,6 +74,23 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 1 / 3,
   },
+  avatarContainer: {
+    flexDirection: 'row',
+    margin: 8,
+  },
+  statisticsContainter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flex: 1,
+    margin: 18,
+  },
+  stat:{
+    alignItems:'center'
+  },
+  number:{
+    fontWeight: "bold",
+     fontSize: 20
+  }
 });
 
 const mapStateToProps = store => ({

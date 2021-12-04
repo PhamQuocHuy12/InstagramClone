@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, Button} from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, DarkTheme } from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {Provider} from 'react-redux';
@@ -12,8 +12,8 @@ import thunk from 'redux-thunk';
 import SignIn from './app/screens/SignIn';
 import SignUp from './app/screens/SignUp';
 import Main from './app/screens/Main';
-import Add from './app/screens/Add';
-import Save from './app/screens/Save';
+import TakePicture from './app/screens/TakePicture';
+import AddCaption from './app/screens/AddCaption';
 
 const Stack = createNativeStackNavigator();
 const store = createStore(rootReducer, applyMiddleware(thunk));
@@ -53,11 +53,11 @@ const App = () => {
   }
   return (
     <Provider store={store}>
-      <NavigationContainer>
+      <NavigationContainer theme={DarkTheme}>
         <Stack.Navigator >
           <Stack.Screen name="Main" component={Main} options={{headerShown: false}}/>
-          <Stack.Screen name="Add" component={Add}/>
-          <Stack.Screen name="Save" component={Save} />
+          <Stack.Screen name="TakePicture" component={TakePicture} />
+          <Stack.Screen name="AddCaption" component={AddCaption} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
