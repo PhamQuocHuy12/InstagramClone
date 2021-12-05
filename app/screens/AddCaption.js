@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Keyboard,
   Button,
+  ToastAndroid
 } from 'react-native';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
@@ -15,6 +17,8 @@ import firestore from '@react-native-firebase/firestore';
 export default function AddCaption(props) {
   const [caption, setCaption] = useState('');
   console.log(props.route.params);
+  const captionInput = useRef(null);
+
 
   React.useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -26,6 +30,11 @@ export default function AddCaption(props) {
     const uri = props.route.params.image;
     const childPath = `post/${auth().currentUser.uid}/${Math.random().toString(36)}`;
     console.log(childPath)
+
+    Keyboard.dismiss();
+    captionInput.current.editable = false;
+    ToastAndroid.show("Posting", ToastAndroid.SHORT);
+
 
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -72,13 +81,13 @@ const savePostData = (downloadURL) => {
   return (
     <View style={styles.container}>
       <TextInput
+        ref={captionInput}
         multiline={true}
         placeholder="Write a caption . . ."
         onChangeText={caption => setCaption(caption)}
       />
       <Image style={styles.image} source={{uri: props.route.params.image}} />
 
-      {/* <Button title="Save" onPress={() => uploadImage()} /> */}
     </View>
   );
 }

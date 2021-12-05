@@ -1,38 +1,155 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {fetchUserPosts, fetchUser} from '../../redux/actions';
 import {Icon, Avatar} from 'react-native-elements';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 function Profile(props) {
-  const {currentUser, posts} = props;
-  console.log(currentUser);
+  const [userPost, setUserPost] = useState([]);
+  const [user, setUser] = useState(null);
+  const [following, setFollowing] = useState([]);
+  const [follower, setFollower] = useState([]);
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    const {currentUser, posts, following, follower} = props;
+
+    if (props.route.params.uid === auth().currentUser.uid) {
+      setUser(currentUser);
+      setUserPost(posts);
+      setFollowing(following);
+      setFollower(follower);
+    } else {
+      firestore()
+        .collection('users')
+        .doc(props.route.params.uid)
+        .get()
+        .then(snapshot => {
+          if (snapshot.exists) {
+            setUser(snapshot._data);
+          } else {
+            console.log('User doesnt exist');
+          }
+        });
+      firestore()
+        .collection('posts')
+        .doc(props.route.params.uid)
+        .collection('userPosts')
+        .orderBy('creation', 'asc')
+        .onSnapshot(snapshot => {
+          let posts = snapshot.docs.map(doc => {
+            const data = doc.data();
+            const id = doc.id;
+            return {id, ...data};
+          });
+          setUserPost(posts);
+        });
+      firestore()
+        .collection('following')
+        .doc(props.route.params.uid)
+        .collection('userFollowing')
+        .onSnapshot(snapshot => {
+          let following = snapshot.docs.map(doc => {
+            const id = doc.id;
+            return id;
+          });
+          setFollowing(following);
+        });
+      firestore()
+        .collection('follower')
+        .doc(props.route.params.uid)
+        .collection('userFollower')
+        .onSnapshot(snapshot => {
+          let follower = snapshot.docs.map(doc => {
+            const id = doc.id;
+            return id;
+          });
+          setFollower(follower);
+        });
+    }
+    if (props.following.indexOf(props.route.params.uid) > -1) {
+      setIsFollowing(true);
+    } else {
+      setIsFollowing(false);
+    }
+  }, [props.route.params.uid, props.posts, props.following, props.follower]);
+
+  const handleFollow = () => {
+    if (!isFollowing) {
+      firestore()
+        .collection('following')
+        .doc(auth().currentUser.uid)
+        .collection('userFollowing')
+        .doc(props.route.params.uid)
+        .set({});
+      firestore()
+        .collection('follower')
+        .doc(props.route.params.uid)
+        .collection('userFollower')
+        .doc(auth().currentUser.uid)
+        .set({});
+    } else {
+      firestore()
+        .collection('following')
+        .doc(auth().currentUser.uid)
+        .collection('userFollowing')
+        .doc(props.route.params.uid)
+        .delete({});
+      firestore()
+        .collection('follower')
+        .doc(props.route.params.uid)
+        .collection('userFollower')
+        .doc(auth().currentUser.uid)
+        .delete({});
+    }
+  };
+
+  if (user === null) {
+    return <ActivityIndicator />;
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.userName}>{currentUser.userName}</Text>
+      <Text style={styles.userName}>{user.userName}</Text>
       <View style={styles.avatarContainer}>
         <Avatar
           size={100}
-          title={currentUser.userName[0]}
+          title={user.userName[0]}
           onPress={() => console.log('Works!')}
           activeOpacity={0.7}
           rounded
         />
-        <View style={styles.statisticsContainter}>
-          <View style={styles.stat}>
-            <Text style={styles.number}>{posts.length}</Text>
-            <Text>Posts</Text>
+        <View style={styles.infoContainer}>
+          <View style={styles.statisticsContainter}>
+            <View style={styles.stat}>
+              <Text style={styles.number}>{userPost.length}</Text>
+              <Text>Posts</Text>
+            </View>
+            <View style={styles.stat}>
+              <Text style={styles.number}>{follower.length}</Text>
+              <Text>Follower</Text>
+            </View>
+            <View style={styles.stat}>
+              <Text style={styles.number}>{following.length}</Text>
+              <Text>Following</Text>
+            </View>
           </View>
-          <View style={styles.stat}>
-            <Text style={styles.number}>69</Text>
-            <Text>Follower</Text>
-          </View>
-          <View style={styles.stat}>
-            <Text style={styles.number}>96</Text>
-            <Text>Following</Text>
-          </View>
+          {props.route.params.uid !== auth().currentUser.uid ? (
+            <TouchableOpacity
+              onPress={() => handleFollow()}
+              style={styles.followBtn}>
+              <Text>{isFollowing ? 'Following' : 'Follow'}</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
 
@@ -40,7 +157,7 @@ function Profile(props) {
         <FlatList
           numColumns={3}
           horizontal={false}
-          data={posts}
+          data={userPost}
           renderItem={({item}) => (
             <View style={styles.imageContainer}>
               <Image style={styles.image} source={{uri: item.downloadURL}} />
@@ -58,7 +175,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   infoContainer: {
-    margin: 10,
+    flexDirection: 'column',
   },
   userName: {
     alignSelf: 'center',
@@ -82,22 +199,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     flex: 1,
-    margin: 18,
+    margin: 12,
   },
-  stat:{
-    alignItems:'center'
+  stat: {
+    alignItems: 'center',
+    margin: 5,
   },
-  number:{
-    fontWeight: "bold",
-     fontSize: 20
-  }
+  number: {
+    fontWeight: 'bold',
+    fontSize: 16.5,
+    marginBottom: 2,
+  },
+  followBtn: {
+    backgroundColor: '#00BFFF',
+    marginTop: 10,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 const mapStateToProps = store => ({
   currentUser: store.userState.currentUser,
   posts: store.userState.posts,
+  following: store.userState.following,
+  follower: store.userState.follower,
 });
 
-const mapDispatchProps = dispatch =>
-  bindActionCreators({fetchUser, fetchUserPosts}, dispatch);
-export default connect(mapStateToProps, mapDispatchProps)(Profile);
+export default connect(mapStateToProps, null)(Profile);

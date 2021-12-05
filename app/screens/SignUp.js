@@ -9,7 +9,7 @@ import {
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import LinearGradient from 'react-native-linear-gradient';
-import {Icon} from 'react-native-elements';
+import {Icon, Avatar} from 'react-native-elements';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 const SignUp = ({navigation}) => {
