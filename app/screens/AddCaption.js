@@ -18,7 +18,7 @@ export default function AddCaption(props) {
 
   React.useLayoutEffect(() => {
     props.navigation.setOptions({
-      headerRight: () => <TouchableOpacity><Text onPress={() => uploadImage()}>Save</Text></TouchableOpacity>,
+      headerRight: () => <TouchableOpacity><Text onPress={() => uploadImage()}>Post</Text></TouchableOpacity>,
     });
   }, [props.navigation]);
 
@@ -68,8 +68,6 @@ const savePostData = (downloadURL) => {
             props.navigation.popToTop()
         }))
 }
-
-
 
   return (
     <View style={styles.container}>

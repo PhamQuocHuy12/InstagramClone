@@ -7,7 +7,7 @@ import {Icon, Avatar} from 'react-native-elements';
 
 function Profile(props) {
   const {currentUser, posts} = props;
-  console.log('1');
+  console.log(currentUser);
 
   return (
     <View style={styles.container}>
