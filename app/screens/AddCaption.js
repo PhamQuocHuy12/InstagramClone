@@ -24,42 +24,50 @@ export default function AddCaption(props) {
 
   const uploadImage = async () => {
     const uri = props.route.params.image;
-    const childPath = `post/${auth().currentUser.uid}/${Math.random().toString(
-      36,
-    )}`;
+    const childPath = `post/${auth().currentUser.uid}/${Math.random().toString(36)}`;
+    console.log(childPath)
 
     const response = await fetch(uri);
     const blob = await response.blob();
 
-    const task = storage().ref().child(childPath).put(blob);
-    const taksProgress = snapshot => {
-      console.log(`transferred: ${snapshot.bytesTransferred}`);
-    };
+    const task = storage()
+        .ref()
+        .child(childPath)
+        .put(blob);
+
+    const taskProgress = snapshot => {
+        console.log(`transferred: ${snapshot.bytesTransferred}`)
+    }
+
     const taskCompleted = () => {
-      task.snapshot.ref.getDownloadURL().then(snapshot => {
-        savePostData(snapshot);
-        console.log(snapshot);
-      });
-    };
+        task.snapshot.ref.getDownloadURL().then((snapshot) => {
+            savePostData(snapshot);
+            console.log(snapshot)
+        })
+    }
+
     const taskError = snapshot => {
-      console.log(snapshot);
-    };
+        console.log(snapshot)
+    }
 
-    task.on('state_changed', taksProgress, taskError, taskCompleted);
-  };
+    task.on("state_changed", taskProgress, taskError, taskCompleted);
+}
 
-  const savePostData = downloadURL => [
+const savePostData = (downloadURL) => {
+
     firestore()
-      .collection('posts')
-      .doc(auth().currentUser.uid)
-      .collection('userPosts')
-      .add({
-        downloadURL,
-        caption,
-        creation: firestore.FieldValue.serverTimestamp(),
-      })
-      .then(props.navigation.popToTop()),
-  ];
+        .collection('posts')
+        .doc(auth().currentUser.uid)
+        .collection("userPosts")
+        .add({
+            downloadURL,
+            caption,
+            likesCount: 0,
+            creation: firestore.FieldValue.serverTimestamp()
+        }).then((function () {
+            props.navigation.popToTop()
+        }))
+}
 
 
 
