@@ -1,22 +1,22 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
-  Text,
-  Image,
   FlatList,
   TextInput,
-  TouchableOpacity,
 } from 'react-native';
-import {Icon, Avatar} from 'react-native-elements';
 import {ActivityIndicator} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import UserCard from '../components/UserCard';
 
 export default function Search(props) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = search => {
+    if(search === ''){
+      setLoading(false)
+    }
     setLoading(true);
     firestore()
       .collection('users')
@@ -35,7 +35,8 @@ export default function Search(props) {
   return (
     <View>
       <TextInput
-        placeholder="Type Here..."
+        style={styles.searchBox}
+        placeholder="Enter User Name ..."
         onChangeText={search => fetchUsers(search)}
       />
       {loading && <ActivityIndicator />}
@@ -45,16 +46,17 @@ export default function Search(props) {
         horizontal={false}
         data={users}
         renderItem={({item}) => (
-          <TouchableOpacity
-            onPress={() =>
-              props.navigation.navigate('Profile', {uid: item.id})
-            }>
-            <Text>{item.userName}</Text>
-          </TouchableOpacity>
+          <UserCard user={item} navigation={props.navigation}/>
         )}
       />
     </View>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  searchBox:{
+    backgroundColor:'gray',
+    margin: 15,
+    borderRadius: 15,
+  }
+});

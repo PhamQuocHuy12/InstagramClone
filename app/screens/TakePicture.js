@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Camera} from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import {Icon} from 'react-native-elements';
-import { useIsFocused } from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import {
   StyleSheet,
   Text,
@@ -42,23 +42,23 @@ export default function TakePicture({navigation}) {
   };
 
   const pickImage = async () => {
-    try{
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-  
-    console.log(result);
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
 
-    if (!result.cancelled) {
-      setImage(result.uri);
-      navigation.navigate('AddCaption', {image: result.uri});
+      console.log(result);
+
+      if (!result.cancelled) {
+        setImage(result.uri);
+        navigation.navigate('AddCaption', {image: result.uri});
+      }
+    } catch (error) {
+      ToastAndroid.show('Cannot select PNG file', ToastAndroid.SHORT);
     }
-  }catch(error){
-    ToastAndroid.show("Cannot select PNG file", ToastAndroid.SHORT);
-  }
   };
 
   if (hasCameraPermission === null || hasGalleryPermission === false) {
@@ -70,32 +70,49 @@ export default function TakePicture({navigation}) {
   return (
     <View style={styles.container}>
       <View style={styles.cameraContainer}>
-      { isFocused &&<Camera
-          ref={ref => setCamera(ref)}
-          style={styles.camera}
-          type={type}
-          ratio={'1:1'}
-        />}
+        {isFocused && (
+          <Camera
+            ref={ref => setCamera(ref)}
+            style={styles.camera}
+            type={type}
+            ratio={'1:1'}
+          />
+        )}
       </View>
       {/* {image && <Image source={{uri: image}} style={styles.image} />} */}
       <View style={styles.cameraControlContainer}>
-        <TouchableOpacity onPress={() => pickImage()}>
-          <Icon reverse name="photograph" type="fontisto" />
+        <TouchableOpacity>
+          <Icon
+            onPress={() => pickImage()}
+            name="photograph"
+            type="fontisto"
+            color="#fff"
+          />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.takePictureBtn}
-          onPress={() => takePicture()}>
-          <Icon reverse name="camera" type="evilicons" />
+
+        <TouchableOpacity>
+          <Icon
+            onPress={() => takePicture()}
+            name="camera"
+            type="evilicons"
+            color="#fff"
+            size={60}
+          />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setType(
-              type === Camera.Constants.Type.back
-                ? Camera.Constants.Type.front
-                : Camera.Constants.Type.back,
-            );
-          }}>
-          <Icon reverse name="flip-camera-android" type="materialicons" />
+
+        <TouchableOpacity>
+          <Icon
+            onPress={() => {
+              setType(
+                type === Camera.Constants.Type.back
+                  ? Camera.Constants.Type.front
+                  : Camera.Constants.Type.back,
+              );
+            }}
+            name="flip-camera-android"
+            type="materialicons"
+            color="#fff"
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -127,5 +144,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     margin: 15,
+    padding: 25,
+    alignItems: 'center',
   },
 });

@@ -7,9 +7,10 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import {connect} from 'react-redux';
-import {Icon, Avatar} from 'react-native-elements';
+import {Avatar} from 'react-native-elements';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 
@@ -19,9 +20,11 @@ function Profile(props) {
   const [following, setFollowing] = useState([]);
   const [follower, setFollower] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const {currentUser, posts, following, follower} = props;
+    setIsLoading(true)
 
     if (props.route.params.uid === auth().currentUser.uid) {
       setUser(currentUser);
@@ -81,6 +84,7 @@ function Profile(props) {
     } else {
       setIsFollowing(false);
     }
+    setIsLoading(false);
   }, [props.route.params.uid, props.posts, props.following, props.follower]);
 
   const handleFollow = () => {
@@ -97,6 +101,7 @@ function Profile(props) {
         .collection('userFollower')
         .doc(auth().currentUser.uid)
         .set({});
+      ToastAndroid.show(`Followed ${user.userName}`, ToastAndroid.SHORT);
     } else {
       firestore()
         .collection('following')
@@ -110,10 +115,11 @@ function Profile(props) {
         .collection('userFollower')
         .doc(auth().currentUser.uid)
         .delete({});
+      ToastAndroid.show(`Unfollowed ${user.userName}`, ToastAndroid.SHORT);
     }
   };
 
-  if (user === null) {
+  if (isLoading || user == null) {
     return <ActivityIndicator />;
   }
 
