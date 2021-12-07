@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
 import {connect} from 'react-redux';
+import PostCard from '../components/PostCard';
+import {Avatar} from 'react-native-elements';
 
 function Feed(props) {
   const [posts, setPosts] = useState([]);
@@ -25,10 +27,7 @@ function Feed(props) {
           horizontal={false}
           data={posts}
           renderItem={({item}) => (
-            <View style={styles.containerImage}>
-              <Text style={styles.container}>{item.user.userName}</Text>
-              <Image style={styles.image} source={{uri: item.downloadURL}} />
-            </View>
+            <PostCard post={item} navigation={props.navigation}></PostCard>
           )}
         />
       </View>

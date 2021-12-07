@@ -1,8 +1,8 @@
-import {USERS_POSTS_STATE_CHANGE, USERS_DATA_STATE_CHANGE} from '../constants';
+import {USERS_POSTS_STATE_CHANGE, USERS_DATA_STATE_CHANGE, CLEAR_DATA} from '../constants';
 
 const initialState = {
   users: [],
-  feed:[],
+  feed: [],
   usersLoaded: 0,
 };
 
@@ -18,6 +18,13 @@ export const users = (state = initialState, action) => {
         ...state,
         usersLoaded: state.usersLoaded + 1,
         feed: [...state.feed, ...action.posts],
+      };
+    case CLEAR_DATA:
+      console.log('clear data')
+      return {
+        users: [],
+        feed: [],
+        usersLoaded: 0,
       };
     default:
       return state;

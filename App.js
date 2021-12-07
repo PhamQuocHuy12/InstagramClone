@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Text, View, Button} from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {NavigationContainer, DarkTheme } from '@react-navigation/native';
+import {NavigationContainer, DarkTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {Provider} from 'react-redux';
@@ -54,8 +54,19 @@ const App = () => {
   return (
     <Provider store={store}>
       <NavigationContainer theme={DarkTheme}>
-        <Stack.Navigator >
-          <Stack.Screen name="Main" component={Main} options={{headerShown: false}}/>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Main"
+            component={Main}
+            options={{
+              title: 'Instagram',
+              // headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontFamily:'Grestal', 
+              },
+            }}
+          />
           <Stack.Screen name="TakePicture" component={TakePicture} />
           <Stack.Screen name="AddCaption" component={AddCaption} />
         </Stack.Navigator>

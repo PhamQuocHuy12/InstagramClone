@@ -1,15 +1,8 @@
 import React, {useEffect, useState, Component} from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {fetchUser, fetchUserPosts, fetchUserFollowing, fetchUserFollower} from '../../redux/actions/index';
+import {fetchUser, fetchUserPosts, fetchUserFollowing, fetchUserFollower, clearData} from '../../redux/actions/index';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import auth from '@react-native-firebase/auth';
@@ -25,8 +18,9 @@ const EmptyScreen = () => {
 export class Main extends Component {
 
   async componentDidMount() {
-    const getUser = await this.props.fetchUser();
-    const getPosts = await this.props.fetchUserPosts();
+    this.props.clearData();
+    this.props.fetchUser();
+    this.props.fetchUserPosts();
     this.props.fetchUserFollowing();
     this.props.fetchUserFollower();
   }
@@ -90,6 +84,6 @@ export class Main extends Component {
 const mapStateToProps = store => ({
   currentUser: store.userState.currentUser,
 });
-const mapDispatchProps = dispatch => bindActionCreators({fetchUser, fetchUserPosts, fetchUserFollowing, fetchUserFollower}, dispatch);
+const mapDispatchProps = dispatch => bindActionCreators({fetchUser, fetchUserPosts, fetchUserFollowing, fetchUserFollower, clearData}, dispatch);
 
 export default connect(mapStateToProps, mapDispatchProps)(Main);

@@ -20,11 +20,11 @@ function Profile(props) {
   const [following, setFollowing] = useState([]);
   const [follower, setFollower] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const {currentUser, posts, following, follower} = props;
-    setIsLoading(true)
+    setIsLoading(true);
 
     if (props.route.params.uid === auth().currentUser.uid) {
       setUser(currentUser);
@@ -119,6 +119,10 @@ function Profile(props) {
     }
   };
 
+  const onLogout = () => {
+    auth().signOut();
+  }
+
   if (isLoading || user == null) {
     return <ActivityIndicator />;
   }
@@ -155,7 +159,13 @@ function Profile(props) {
               style={styles.followBtn}>
               <Text>{isFollowing ? 'Following' : 'Follow'}</Text>
             </TouchableOpacity>
-          ) : null}
+          ) : (
+            <TouchableOpacity
+              onPress={() => onLogout()}
+              style={styles.followBtn}>
+              <Text>Logout</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -178,7 +188,7 @@ function Profile(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 40,
+    marginTop: 20,
   },
   infoContainer: {
     flexDirection: 'column',
