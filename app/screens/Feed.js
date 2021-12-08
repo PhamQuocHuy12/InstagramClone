@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
 import {connect} from 'react-redux';
 import PostCard from '../components/PostCard';
-import {Avatar} from 'react-native-elements';
 
 function Feed(props) {
   const [posts, setPosts] = useState([]);
@@ -16,9 +15,8 @@ function Feed(props) {
       });
       setPosts(props.feed);
     }
-  }, [props.usersLoaded, props.feed]);
-
-
+  }, [props.usersLoaded, props.feed, props.users]);
+  console.log('props: ' + JSON.stringify(props.feed))
   return (
     <View style={styles.container}>
       <View style={styles.containerGallery}>
@@ -26,6 +24,7 @@ function Feed(props) {
           numColumns={1}
           horizontal={false}
           data={posts}
+          extraData={props.users}
           renderItem={({item}) => (
             <PostCard post={item} navigation={props.navigation}></PostCard>
           )}
@@ -58,5 +57,6 @@ const mapStateToProps = store => ({
   following: store.userState.following,
   feed: store.usersState.feed,
   usersLoaded: store.usersState.usersLoaded,
+  users: store.usersState.users,
 });
 export default connect(mapStateToProps, null)(Feed);

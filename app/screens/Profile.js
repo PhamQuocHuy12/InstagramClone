@@ -123,7 +123,7 @@ function Profile(props) {
     auth().signOut();
   }
 
-  if (isLoading || user == null) {
+  if (isLoading || user == undefined) {
     return <ActivityIndicator />;
   }
 

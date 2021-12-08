@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -6,69 +6,76 @@ import {
   View,
   Image,
   TextInput,
+  ActivityIndicator
 } from 'react-native';
 import {Avatar, Icon} from 'react-native-elements';
 
 export default function PostCard({post, navigation}) {
-  console.log(post);
-  return (
-    <View style={styles.postContainer}>
-      <View style={styles.userContainer}>
-        <Avatar
-          size={50}
-          title={post.user.userName[0]}
-          onPress={() => console.log('Works!')}
-          activeOpacity={0.7}
-          rounded
-        />
-        <Text style={styles.container}>{post.user.userName}</Text>
-      </View>
-      <Image style={styles.image} source={{uri: post.downloadURL}} />
-      <View style={styles.iconContainer}>
-        <Icon
-          style={styles.icon}
-          size={30}
-          name="hearto"
-          type="antdesign"
-          color="#fff"
-        />
-        <Icon
-          style={styles.icon}
-          size={30}
-          name="chatbubble-outline"
-          type="ionicon"
-          color="#fff"
-        />
-        <Icon
-          style={styles.icon}
-          size={30}
-          name="paper-plane-outline"
-          type="ionicon"
-          color="#fff"
-        />
-      </View>
-      <View style={styles.postInfoContainer}>
-        <Text>17 likes</Text>
-        <Text>
-          <Text style={{fontWeight: 'bold'}}>{post.user.userName}</Text>{' '}
-          {post.caption}
-        </Text>
-        <View style={styles.commentContainer}>
-          <TextInput
-            stlye={styles.commentInput}
-            placeholder={'Add comment ...'}
+  const [postCard, setPostCard] = useState(null);
+  if ( post.user == undefined) {
+    return <ActivityIndicator />;
+  }
+  console.log('post: ' + JSON.stringify(post))
+    return (
+      <View style={styles.postContainer}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Profile', {uid: post.user.uid})}
+          style={styles.userContainer}>
+          <Avatar
+            size={50}
+            title={post.user.userName[0]}
+            onPress={() => console.log('Works!')}
+            activeOpacity={0.7}
+            rounded
+          />
+          <Text style={styles.container}>{post.user.userName}</Text>
+        </TouchableOpacity>
+        <Image style={styles.image} source={{uri: post.downloadURL}} />
+        <View style={styles.iconContainer}>
+          <Icon
+            style={styles.icon}
+            size={30}
+            name="hearto"
+            type="antdesign"
+            color="#fff"
           />
           <Icon
-          style={styles.icon}
-          size={30}
-          name="checkmark-outline"
-          type="ionicon"
-          color="#fff"
-        />
+            style={styles.icon}
+            size={30}
+            name="chatbubble-outline"
+            type="ionicon"
+            color="#fff"
+          />
+          <Icon
+            style={styles.icon}
+            size={30}
+            name="paper-plane-outline"
+            type="ionicon"
+            color="#fff"
+          />
+        </View>
+        <View style={styles.postInfoContainer}>
+          <Text>17 likes</Text>
+          <Text>
+            <Text style={{fontWeight: 'bold'}}>{post.user.userName}</Text>{' '}
+            {post.caption}
+          </Text>
+          <View style={styles.commentContainer}>
+            <TextInput
+              stlye={styles.commentInput}
+              placeholder={'Add comment ...'}
+            />
+            <Icon
+              style={styles.icon}
+              size={30}
+              name="checkmark-outline"
+              type="ionicon"
+              color="#fff"
+            />
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
 }
 const styles = StyleSheet.create({
   postContainer: {
@@ -97,8 +104,8 @@ const styles = StyleSheet.create({
   postInfoContainer: {
     flex: 1,
   },
-  commentContainer:{
-    flexDirection:'row',
-    justifyContent:'space-between'
+  commentContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

@@ -84,19 +84,21 @@ export function fetchUserFollower() {
   };
 }
 
-export function fetchUsersData(uid, getPosts) {
-  return (dispatch, getState) => {
+export  function fetchUsersData(uid, getPosts) {
+  return async (dispatch, getState) => {
     const found = getState().usersState.users.some(el => el.uid === uid);
-    if (!found) {
-      firestore()
+     if (!found) {
+        await firestore()
         .collection('users')
         .doc(uid)
         .get()
-        .then(snapshot => {
+        .then( (snapshot) => {
           if (snapshot.exists) {
             let user = snapshot._data;
             user.uid = uid;
             dispatch({type: USERS_DATA_STATE_CHANGE, user});
+            console.log('state2: ' + JSON.stringify(getState()))
+
           } else {
             console.log('does not exist');
           }
@@ -125,7 +127,7 @@ export function fetchUsersFollowingPosts(uid) {
           return {id, ...data, user};
         });
         dispatch({type: USERS_POSTS_STATE_CHANGE, posts, uid});
-       
+        console.log('state1: ' + JSON.stringify(getState()))
       });
   };
 }
