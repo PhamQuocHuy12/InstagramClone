@@ -14,6 +14,7 @@ import SignUp from './app/screens/SignUp';
 import Main from './app/screens/Main';
 import TakePicture from './app/screens/TakePicture';
 import AddCaption from './app/screens/AddCaption';
+import Comment from './app/screens/Comment';
 
 const Stack = createNativeStackNavigator();
 const store = createStore(rootReducer, applyMiddleware(thunk));
@@ -69,6 +70,7 @@ const App = () => {
           />
           <Stack.Screen name="TakePicture" component={TakePicture} />
           <Stack.Screen name="AddCaption" component={AddCaption} />
+          <Stack.Screen name="Comment" component={Comment} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

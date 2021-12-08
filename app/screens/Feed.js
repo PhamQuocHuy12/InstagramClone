@@ -16,7 +16,6 @@ function Feed(props) {
       setPosts(props.feed);
     }
   }, [props.usersLoaded, props.feed, props.users]);
-  console.log('props: ' + JSON.stringify(props.feed))
   return (
     <View style={styles.container}>
       <View style={styles.containerGallery}>

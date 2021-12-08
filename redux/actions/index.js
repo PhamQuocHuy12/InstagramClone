@@ -97,7 +97,6 @@ export  function fetchUsersData(uid, getPosts) {
             let user = snapshot._data;
             user.uid = uid;
             dispatch({type: USERS_DATA_STATE_CHANGE, user});
-            console.log('state2: ' + JSON.stringify(getState()))
 
           } else {
             console.log('does not exist');
@@ -127,7 +126,6 @@ export function fetchUsersFollowingPosts(uid) {
           return {id, ...data, user};
         });
         dispatch({type: USERS_POSTS_STATE_CHANGE, posts, uid});
-        console.log('state1: ' + JSON.stringify(getState()))
       });
   };
 }
