@@ -4,34 +4,26 @@ import {
   View,
   FlatList,
   TextInput,
+  ToastAndroid,
 } from 'react-native';
 import {ActivityIndicator} from 'react-native';
-import firestore from '@react-native-firebase/firestore';
 import UserCard from '../components/UserCard';
+import { searchUsers } from '../services/FirebaseService';
 
 export default function Search(props) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchUsers = search => {
-    if(search === ''){
+  const fetchUsers = async search => {
+    try{
+      setUsers(await searchUsers(search));
       setLoading(false)
+    }catch(error){
+      ToastAndroid.show('Cannot search users', ToastAndroid.SHORT);
+      setLoading(true)
     }
-    setLoading(true);
-    firestore()
-      .collection('users')
-      .where('userName', '>=', search)
-      .get()
-      .then(snapshot => {
-        let users = snapshot.docs.map(doc => {
-          const data = doc.data();
-          const id = doc.id;
-          return {id, ...data};
-        });
-        setUsers(users);
-        setLoading(false);
-      });
   };
+
   return (
     <View>
       <TextInput

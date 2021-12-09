@@ -13,6 +13,15 @@ import {connect} from 'react-redux';
 import {Avatar} from 'react-native-elements';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import {
+  getUser,
+  getUserPosts,
+  getUserFollowing,
+  getUserFollower,
+  onFollowing,
+  onUnfollowing,
+  signOut,
+} from '../services/FirebaseService';
 
 function Profile(props) {
   const [userPost, setUserPost] = useState([]);
@@ -20,110 +29,52 @@ function Profile(props) {
   const [following, setFollowing] = useState([]);
   const [follower, setFollower] = useState([]);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const {currentUser, posts, following, follower} = props;
-    setIsLoading(true);
+    const userId = props.route.params.uid;
+    getUserInformation(userId);
+    if (props.following.indexOf(userId) > -1) {
+      setIsFollowing(true);
+    } else {
+      setIsFollowing(false);
+    }
+  }, [props.route.params.uid, props.posts, props.following, props.follower]);
 
-    if (props.route.params.uid === auth().currentUser.uid) {
+  const getUserInformation = async uid => {
+    const {currentUser, posts, following, follower} = props;
+    if (uid === auth().currentUser.uid) {
       setUser(currentUser);
       setUserPost(posts);
       setFollowing(following);
       setFollower(follower);
     } else {
-      firestore()
-        .collection('users')
-        .doc(props.route.params.uid)
-        .get()
-        .then(snapshot => {
-          if (snapshot.exists) {
-            setUser(snapshot._data);
-          } else {
-            console.log('User doesnt exist');
-          }
-        });
-      firestore()
-        .collection('posts')
-        .doc(props.route.params.uid)
-        .collection('userPosts')
-        .orderBy('creation', 'asc')
-        .onSnapshot(snapshot => {
-          let posts = snapshot.docs.map(doc => {
-            const data = doc.data();
-            const id = doc.id;
-            return {id, ...data};
-          });
-          setUserPost(posts);
-        });
-      firestore()
-        .collection('following')
-        .doc(props.route.params.uid)
-        .collection('userFollowing')
-        .onSnapshot(snapshot => {
-          let following = snapshot.docs.map(doc => {
-            const id = doc.id;
-            return id;
-          });
-          setFollowing(following);
-        });
-      firestore()
-        .collection('follower')
-        .doc(props.route.params.uid)
-        .collection('userFollower')
-        .onSnapshot(snapshot => {
-          let follower = snapshot.docs.map(doc => {
-            const id = doc.id;
-            return id;
-          });
-          setFollower(follower);
-        });
+      setUser(await getUser(uid));
+      setUserPost(await getUserPosts(uid));
+      setFollowing(await getUserFollowing(uid));
+      setFollower(await getUserFollower(uid));
     }
-    if (props.following.indexOf(props.route.params.uid) > -1) {
-      setIsFollowing(true);
-    } else {
-      setIsFollowing(false);
-    }
-    setIsLoading(false);
-  }, [props.route.params.uid, props.posts, props.following, props.follower]);
+  };
 
   const handleFollow = () => {
     if (!isFollowing) {
-      firestore()
-        .collection('following')
-        .doc(auth().currentUser.uid)
-        .collection('userFollowing')
-        .doc(props.route.params.uid)
-        .set({});
-      firestore()
-        .collection('follower')
-        .doc(props.route.params.uid)
-        .collection('userFollower')
-        .doc(auth().currentUser.uid)
-        .set({});
+      onFollowing(props.route.params.uid);
       ToastAndroid.show(`Followed ${user.userName}`, ToastAndroid.SHORT);
     } else {
-      firestore()
-        .collection('following')
-        .doc(auth().currentUser.uid)
-        .collection('userFollowing')
-        .doc(props.route.params.uid)
-        .delete({});
-      firestore()
-        .collection('follower')
-        .doc(props.route.params.uid)
-        .collection('userFollower')
-        .doc(auth().currentUser.uid)
-        .delete({});
+      onUnfollowing(props.route.params.uid);
       ToastAndroid.show(`Unfollowed ${user.userName}`, ToastAndroid.SHORT);
     }
   };
 
   const onLogout = () => {
-    auth().signOut();
-  }
+    try {
+      signOut();
+      ToastAndroid.show(`Signed out!`, ToastAndroid.SHORT);
+    } catch (error) {
+      ToastAndroid.show(`Signing out failed`, ToastAndroid.SHORT);
+    }
+  };
 
-  if (isLoading || user == undefined) {
+  if (user === null || userPost ===null || following ===null || follower ===null ) {
     return <ActivityIndicator />;
   }
 

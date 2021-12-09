@@ -3,24 +3,24 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
 import LinearGradient from 'react-native-linear-gradient';
+import {signIn} from '../services/FirebaseService';
 
 const SignIn = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const OnLoginPress = () => {
-    auth().signInWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log('Signed in!');
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+    try {
+      signIn(email, password);
+      ToastAndroid.show('Signed in!', ToastAndroid.SHORT);
+    } catch (error) {
+      ToastAndroid.show('Invalid information', ToastAndroid.SHORT);
+    }
   };
 
   return (
@@ -30,11 +30,11 @@ const SignIn = ({navigation}) => {
         <TextInput
           style={styles.input}
           placeholder="Email"
-          onChangeText={(email) => setEmail(email)}></TextInput>
+          onChangeText={email => setEmail(email)}></TextInput>
         <TextInput
           style={styles.input}
           placeholder="Password"
-          onChangeText={(password) => setPassword(password)}
+          onChangeText={password => setPassword(password)}
           secureTextEntry={true}></TextInput>
         <TouchableOpacity style={styles.button} onPress={() => OnLoginPress()}>
           <Text style={styles.boldText}>Login</Text>

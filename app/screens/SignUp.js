@@ -5,12 +5,12 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  ToastAndroid
 } from 'react-native';
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
 import LinearGradient from 'react-native-linear-gradient';
-import {Icon, Avatar} from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {signUp} from '../services/FirebaseService';
 
 const SignUp = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -19,25 +19,17 @@ const SignUp = ({navigation}) => {
   const [userName, setUserName] = useState('');
 
   const OnSignUpPress = () => {
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        firestore().collection('users')
-          .doc(auth().currentUser.uid)
-          .set({
-            fullName, email, userName
-          })
-        console.log('User account created & signed in!');
-      })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-        }
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-        console.error(error);
-      });
+    try {
+      signUp(email, password, fullName, userName);
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        ToastAndroid.show('That email address is already in use!', ToastAndroid.SHORT);
+      }
+      if (error.code === 'auth/invalid-email') {
+        ToastAndroid.show('That email address is invalid!', ToastAndroid.SHORT);
+      }
+      ToastAndroid.show(error, ToastAndroid.SHORT);
+    }
   };
 
   return (
