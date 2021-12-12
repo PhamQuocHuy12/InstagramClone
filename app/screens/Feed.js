@@ -23,8 +23,8 @@ function Feed(props) {
         return x.creation - y.creation;
       });
       setPosts(props.feed);
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    }    
   }, [props.usersLoaded, props.feed, props.users]);
 
   if (isLoading) {
@@ -34,25 +34,18 @@ function Feed(props) {
       </View>
     );
   }
-  if (!isLoading && posts.length === 0) {
-    return (
-      <View style={styles.loading}>
-        <Text>There is no post here, please follow some users</Text>
-      </View>
-    );
-  }
   return (
     <View style={styles.container}>
       <View style={styles.containerGallery}>
-        <FlatList
-          numColumns={1}
-          horizontal={false}
-          data={posts}
-          extraData={props.users}
-          renderItem={({item}) => (
-            <PostCard post={item} navigation={props.navigation}></PostCard>
-          )}
-        />
+          <FlatList
+            numColumns={1}
+            horizontal={false}
+            data={posts}
+            extraData={props.users}
+            renderItem={({item}) => (
+              <PostCard post={item} navigation={props.navigation}></PostCard>
+            )}
+          />
       </View>
     </View>
   );

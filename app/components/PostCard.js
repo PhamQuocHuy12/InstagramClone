@@ -11,8 +11,6 @@ import {
 import {Avatar, Icon} from 'react-native-elements';
 
 export default function PostCard({post, navigation}) {
-  const [postCard, setPostCard] = useState(null);
-  console.log(post)
   if (post.user == undefined) {
     return <ActivityIndicator />;
   }
