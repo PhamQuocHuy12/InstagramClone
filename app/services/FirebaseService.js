@@ -1,16 +1,20 @@
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import {ToastAndroid} from 'react-native';
 
-export const signIn = (email, password) => {
+export const signIn = async (email, password) => {
   auth()
     .signInWithEmailAndPassword(email, password)
     .then(() => {
-      console.log('Signed in!');
+      ToastAndroid.show('Signed in!', ToastAndroid.SHORT);
+    })
+    .catch((error) => {
+      ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
     });
 };
 
-export const signUp = (email, password, fullName, userName) => {
+export const signUp = async (email, password, fullName, userName) => {
   auth()
     .createUserWithEmailAndPassword(email, password)
     .then(() => {
@@ -19,11 +23,15 @@ export const signUp = (email, password, fullName, userName) => {
         email,
         userName,
       });
-      console.log('User account created & signed in!');
-    });
+      ToastAndroid.show('User account created & signed in!', ToastAndroid.SHORT);
+    })
+    .catch((error) => {
+      ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
+  })
 };
 
 export const uploadImage = async (image, caption) => {
+  ToastAndroid.show('Posting', ToastAndroid.SHORT);
   const uri = image;
   const childPath = `post/${auth().currentUser.uid}/${Math.random().toString(
     36,
@@ -46,7 +54,7 @@ export const uploadImage = async (image, caption) => {
     });
   };
   const taskError = snapshot => {
-    console.log(snapshot);
+    ToastAndroid.show('Failed', ToastAndroid.SHORT);
   };
 
   task.on('state_changed', taskProgress, taskError, taskCompleted);
@@ -59,7 +67,7 @@ export const uploadPost = (downloadURL, caption) => {
     .collection('userPosts')
     .add({
       downloadURL,
-      caption,
+      caption: caption,
       likesCount: 0,
       creation: firestore.FieldValue.serverTimestamp(),
     });
@@ -127,6 +135,7 @@ export const getUserFollowing = async uid => {
       });
       return following;
     });
+  console.log(followingList);
   return followingList;
 };
 
@@ -143,33 +152,34 @@ export const getUserFollower = async uid => {
       });
       return follower;
     });
+  console.log(followerList);
   return followerList;
 };
-export const onFollowing = FollowId => {
+export const onFollowing = async followId => {
   firestore()
     .collection('following')
     .doc(auth().currentUser.uid)
     .collection('userFollowing')
-    .doc(FollowId)
+    .doc(followId)
     .set({});
   firestore()
     .collection('follower')
-    .doc(FollowId)
+    .doc(followId)
     .collection('userFollower')
     .doc(auth().currentUser.uid)
     .set({});
 };
 
-export const onUnfollowing = UnfollowId => {
+export const onUnfollowing = async unFollowId => {
   firestore()
     .collection('following')
     .doc(auth().currentUser.uid)
     .collection('userFollowing')
-    .doc(UnfollowId)
+    .doc(unFollowId)
     .delete({});
   firestore()
     .collection('follower')
-    .doc(UnfollowId)
+    .doc(unFollowId)
     .collection('userFollower')
     .doc(auth().currentUser.uid)
     .delete({});

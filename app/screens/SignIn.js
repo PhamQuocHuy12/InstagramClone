@@ -6,6 +6,7 @@ import {
   ToastAndroid,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {signIn} from '../services/FirebaseService';
@@ -13,18 +14,21 @@ import {signIn} from '../services/FirebaseService';
 const SignIn = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const OnLoginPress = () => {
-    try {
-      signIn(email, password);
-      ToastAndroid.show('Signed in!', ToastAndroid.SHORT);
-    } catch (error) {
-      ToastAndroid.show('Invalid information', ToastAndroid.SHORT);
-    }
+  const OnLoginPress = async () => {
+    setIsLoading(true);
+    await signIn(email, password);
+    setIsLoading(false);
   };
 
   return (
     <LinearGradient colors={['#ad52de', '#017afe']} style={styles.container}>
+      {isLoading ? (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : null}
       <View style={styles.loginSection}>
         <Text style={styles.title}>Instagram</Text>
         <TextInput
@@ -91,6 +95,15 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 export default SignIn;

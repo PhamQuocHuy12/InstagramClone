@@ -61,7 +61,6 @@ const App = () => {
             component={Main}
             options={{
               title: 'Instagram',
-              // headerTintColor: '#fff',
               headerTitleStyle: {
                 fontWeight: 'bold',
                 fontFamily:'Grestal', 

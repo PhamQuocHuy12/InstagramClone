@@ -5,7 +5,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  ToastAndroid
+  ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {Icon} from 'react-native-elements';
@@ -17,24 +18,26 @@ const SignUp = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [userName, setUserName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const OnSignUpPress = () => {
-    try {
-      signUp(email, password, fullName, userName);
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        ToastAndroid.show('That email address is already in use!', ToastAndroid.SHORT);
-      }
-      if (error.code === 'auth/invalid-email') {
-        ToastAndroid.show('That email address is invalid!', ToastAndroid.SHORT);
-      }
-      ToastAndroid.show(error, ToastAndroid.SHORT);
+  const OnSignUpPress = async () => {
+    setIsLoading(true);
+    if (email == '' || password == '' || fullName == '' || userName == '') {
+      ToastAndroid.show('All information are needed to be filled!', ToastAndroid.SHORT);
+    } else {
+      await signUp(email, password, fullName, userName);
     }
+    setIsLoading(false);
   };
 
   return (
     <SafeAreaProvider>
       <LinearGradient colors={['#ad52de', '#017afe']} style={styles.container}>
+        {isLoading ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : null}
         <View style={styles.loginSection}>
           <View style={styles.addIcon}>
             <Icon name="add" type="ionicon" color="#fff" size={70} />
@@ -121,6 +124,15 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: 'bold',
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

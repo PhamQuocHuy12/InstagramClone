@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   View,
   Image,
-  ToastAndroid,
 } from 'react-native';
 import {uploadImage} from '../services/FirebaseService';
 
 export default function AddCaption(props) {
   const [caption, setCaption] = useState('');
+  const [isPosting, setIsPosting] = useState(false);
   console.log(props.route.params);
   const captionInput = useRef(null);
 
@@ -26,12 +26,10 @@ export default function AddCaption(props) {
   }, [props.navigation]);
 
   const onUploadPost = async () => {
-    try {
-      uploadImage(props.route.params.image, caption);
-      ToastAndroid.show('Posting', ToastAndroid.SHORT);
-    } catch (error) {
-      ToastAndroid.show('Failed upload post', ToastAndroid.SHORT);
-    }
+    setIsPosting(true);
+    await uploadImage(props.route.params.image, caption);
+    setIsPosting(false);
+    props.navigation.popToTop();
   };
 
   return (

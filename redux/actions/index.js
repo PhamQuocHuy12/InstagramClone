@@ -7,13 +7,13 @@ import {
   USER_FOLLOWER_STATE_CHANGE,
   USERS_DATA_STATE_CHANGE,
   USERS_POSTS_STATE_CHANGE,
-  CLEAR_DATA
+  CLEAR_DATA,
 } from '../constants/index';
 
-export function clearData(){
-  return ((dispatch) => {
-    dispatch({type: CLEAR_DATA})
-  })
+export function clearData() {
+  return dispatch => {
+    dispatch({type: CLEAR_DATA});
+  };
 }
 
 export function fetchUser() {
@@ -84,11 +84,11 @@ export function fetchUserFollower() {
   };
 }
 
-export  function fetchUsersData(uid, getPosts) {
+export function fetchUsersData(uid, getPosts) {
   return async (dispatch, getState) => {
     const found = getState().usersState.users.some(el => el.uid === uid);
-     if (!found) {
-        await firestore()
+    if (!found) {
+      await firestore()
         .collection('users')
         .doc(uid)
         .get()
@@ -97,7 +97,6 @@ export  function fetchUsersData(uid, getPosts) {
             let user = snapshot._data;
             user.uid = uid;
             dispatch({type: USERS_DATA_STATE_CHANGE, user});
-
           } else {
             console.log('does not exist');
           }

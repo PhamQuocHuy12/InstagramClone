@@ -55,13 +55,19 @@ function Profile(props) {
     }
   };
 
-  const handleFollow = () => {
+  const handleFollow = async () => {
     if (!isFollowing) {
       onFollowing(props.route.params.uid);
       ToastAndroid.show(`Followed ${user.userName}`, ToastAndroid.SHORT);
+      setFollower(await getUserFollower(props.route.params.uid));
+      setIsFollowing(true);
+      console.log(isFollowing);
     } else {
       onUnfollowing(props.route.params.uid);
       ToastAndroid.show(`Unfollowed ${user.userName}`, ToastAndroid.SHORT);
+      setFollower(await getUserFollower(props.route.params.uid));
+      setIsFollowing(false);
+      console.log(isFollowing);
     }
   };
 
@@ -74,8 +80,13 @@ function Profile(props) {
     }
   };
 
-  if (user === null || userPost ===null || following ===null || follower ===null ) {
-    return <ActivityIndicator />;
+  console.log(following, follower);
+  if (user === null) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (
@@ -183,6 +194,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

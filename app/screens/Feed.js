@@ -1,10 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, Text, Image, FlatList} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import {connect} from 'react-redux';
 import PostCard from '../components/PostCard';
 
 function Feed(props) {
   const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (
       props.usersLoaded == props.following.length &&
@@ -15,7 +24,23 @@ function Feed(props) {
       });
       setPosts(props.feed);
     }
+    setIsLoading(false);
   }, [props.usersLoaded, props.feed, props.users]);
+
+  if (isLoading) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+  if (!isLoading && posts.length === 0) {
+    return (
+      <View style={styles.loading}>
+        <Text>There is no post here, please follow some users</Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <View style={styles.containerGallery}>
@@ -49,6 +74,15 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
     aspectRatio: 1 / 1,
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 const mapStateToProps = store => ({
