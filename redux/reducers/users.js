@@ -4,6 +4,7 @@ const initialState = {
   users: [],
   feed: [],
   usersLoaded: 0,
+  feedLoaded: false
 };
 
 export const users = (state = initialState, action) => {
@@ -18,6 +19,7 @@ export const users = (state = initialState, action) => {
         ...state,
         usersLoaded: state.usersLoaded + 1,
         feed: [...state.feed, ...action.posts],
+        feedLoaded: true,
       };
     case CLEAR_DATA:
       console.log('clear data')
@@ -25,6 +27,7 @@ export const users = (state = initialState, action) => {
         users: [],
         feed: [],
         usersLoaded: 0,
+        feedLoaded: false
       };
     default:
       return state;

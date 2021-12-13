@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   FlatList,
   ActivityIndicator,
 } from 'react-native';
@@ -12,7 +11,6 @@ import PostCard from '../components/PostCard';
 
 function Feed(props) {
   const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (
@@ -23,32 +21,40 @@ function Feed(props) {
         return x.creation - y.creation;
       });
       setPosts(props.feed);
-      setIsLoading(false);
-    }    
-  }, [props.usersLoaded, props.feed, props.users]);
+    }
+  }, [props.usersLoaded, props.feed, props.users, props.currentUser]);
 
-  if (isLoading) {
+  console.log(props.feed.length + ' & ' + props.feedLoaded);
+
+  if (props.feedLoaded !== true) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" />
       </View>
     );
-  }
-  return (
-    <View style={styles.container}>
-      <View style={styles.containerGallery}>
-          <FlatList
-            numColumns={1}
-            horizontal={false}
-            data={posts}
-            extraData={props.users}
-            renderItem={({item}) => (
-              <PostCard post={item} navigation={props.navigation}></PostCard>
-            )}
-          />
+  } else {
+    return (
+      <View style={styles.container}>
+        {props.feed.length > 0 ? (
+          <View style={styles.containerGallery}>
+            <FlatList
+              numColumns={1}
+              horizontal={false}
+              data={posts}
+              extraData={props.users}
+              renderItem={({item}) => (
+                <PostCard post={item} navigation={props.navigation}></PostCard>
+              )}
+            />
+          </View>
+        ) : (
+          <View style={styles.loading}>
+            <Text>Look like its empty here. Please follow someone</Text>
+          </View>
+        )}
       </View>
-    </View>
-  );
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -84,5 +90,6 @@ const mapStateToProps = store => ({
   feed: store.usersState.feed,
   usersLoaded: store.usersState.usersLoaded,
   users: store.usersState.users,
+  feedLoaded: store.usersState.feedLoaded,
 });
 export default connect(mapStateToProps, null)(Feed);

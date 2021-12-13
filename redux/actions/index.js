@@ -61,7 +61,7 @@ export function fetchUserFollowing() {
           return id;
         });
         dispatch({type: USER_FOLLOWING_STATE_CHANGE, following});
-        for (let i = 0; i < following.length; i++) {
+        for (let i = 0; i <= following.length; i++) {
           dispatch(fetchUsersData(following[i], true));
         }
       });
@@ -92,7 +92,7 @@ export function fetchUsersData(uid, getPosts) {
         .collection('users')
         .doc(uid)
         .get()
-        .then( (snapshot) => {
+        .then(snapshot => {
           if (snapshot.exists) {
             let user = snapshot._data;
             user.uid = uid;
@@ -104,7 +104,7 @@ export function fetchUsersData(uid, getPosts) {
       if (getPosts) {
         dispatch(fetchUsersFollowingPosts(uid));
       }
-    }
+    } 
   };
 }
 
@@ -124,7 +124,7 @@ export function fetchUsersFollowingPosts(uid) {
           const id = doc.id;
           return {id, ...data, user};
         });
-        dispatch({type: USERS_POSTS_STATE_CHANGE, posts, uid});
+        dispatch({type: USERS_POSTS_STATE_CHANGE, posts});
       });
   };
 }
