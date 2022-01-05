@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {connect} from 'react-redux';
 import PostCard from '../components/PostCard';
+import StoriesBar from '../components/StoriesBar';
 
 function Feed(props) {
   const [posts, setPosts] = useState([]);
@@ -35,6 +36,7 @@ function Feed(props) {
   } else {
     return (
       <View style={styles.container}>
+        <StoriesBar/>
         {props.feed.length > 0 ? (
           <View style={styles.containerGallery}>
             <FlatList
